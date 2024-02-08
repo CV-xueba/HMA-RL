@@ -1,0 +1,109 @@
+name: hmarl_version_0
+device: cuda
+num_gpu: 0, 1  # set num_gpu: 0 for cpu mode
+manual_seed: ~
+
+# dataset and data loader settings
+datasets:
+
+  train:
+    name: DIV2K
+    dataroot: ../datasets/DIV2K/train
+    patch_size: 192
+    image_nums: 800
+    random_get_patch: true
+    load_ext: bin
+    num_worker: 16
+
+  val:
+    name: DIV2K
+    scale: 4
+    dataroot: ../datasets/DIV2K/val
+
+env:
+  name: SuperResolutionEnv
+  state_num: 1
+  action_num: 4
+  kernel_radius: 8
+  sigma_r_low: 5
+  sigma_r_range: 40
+  sigma_s_low: 0.6
+  sigma_s_range: 2
+  bias: 128
+  gamma: 128
+  operation:
+    name: operation_multiprocess_discrete_kernel_lab_gpu
+    process_num: 16
+
+# network structures
+network:
+  name: ppo_network
+  n_feats: 64
+  res_scale: 0.2
+
+# agent_settings
+agent:
+  name: agent_ppo_continuous_action
+  value_coef: 0.5
+  entropy_coef: 0.005
+  clip_param: 0.2
+  max_grad_norm: 1
+
+  replay_buffer:
+    buffer_capacity: 1024
+#    buffer_capacity: 1024
+
+  train:
+    ppo_epoch: 4
+    batch_size: 32
+
+  optim:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [ 0.9, 0.99 ]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [ 10000, 40000, 80000 ]
+    lr_gamma: 0.6
+
+
+# disc setting
+disc:
+  name: discriminator_backward
+  train:
+    gail_epoch: 3
+    batch_size: 64
+    gan_reward_weight: 1
+
+  optim:
+    type: Adam
+    lr: !!float 3e-4
+    betas: [ 0.5, 0.999 ]
+
+# reward_function
+reward:
+  name: RewardL1_sharpen
+
+# training settings
+train:
+  epoch: 20000
+  batch_size: 256
+#  batch_size: 32
+
+# validation settings
+val:
+
+# logging settings
+logger:
+  print_freq: 10
+  save_checkpoint_freq: !!float 100
+  save_img_freq: !!float 100
+  use_tb_logger: true
+
+
+# path
+path:
+  pretrain_network: ~
+  resume_state: Ture

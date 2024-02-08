@@ -1,0 +1,103 @@
+name: srmodel_version_0
+device: cuda
+num_gpu: 0
+manual_seed: ~
+model_type: srmodel
+
+datasets:
+  train:
+    name: DIV2K
+    dataroot: ../datasets/DIV2K_one_stage/train
+    patch_size: 224
+    image_nums: 800
+    noise_level: 0
+    random_get_patch: true
+    load_ext: bin
+    num_worker: 16
+  val:
+    name: RealTestDataset
+    dataroot: ../datasets/RealTestDataset
+    num_worker: 16
+
+# network structures
+network_g:
+  type: EDSRUNetSkipConnection
+  in_channel: 3
+  out_channel: 3
+  image_size: 224
+  bn: True
+  n_resblocks: 16
+
+
+# disc setting
+network_d:
+  type: UNetDiscriminatorSN
+  num_in_ch: 3
+  num_feat: 64
+  skip_connection: True
+
+# training settings
+train:
+  epoch: 200000
+  batch_size: 32
+  ema_decay: 0.999
+
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [ 0.9, 0.99 ]
+  optim_d:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [ 0.9, 0.99 ]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [ 400000 ]
+    gamma: 0.5
+
+  warmup_iter: -1  # no warm up
+
+  # perceptual loss (content and style losses)
+  perceptual_opt:
+    type: PerceptualLoss
+    layer_weights:
+      # before relu
+      'conv1_2': 0.1
+      'conv2_2': 0.1
+      'conv3_4': 1
+      'conv4_4': 1
+      'conv5_4': 1
+    vgg_type: vgg19
+    use_input_norm: true
+    perceptual_weight: !!float 1.0
+    style_weight: 0
+    range_norm: false
+    criterion: l1
+
+  # gan loss
+  gan_opt:
+    type: GANLoss
+    gan_type: vanilla
+    real_label_val: 1.0
+    fake_label_val: 0.0
+    loss_weight: !!float 1e-1
+
+  net_d_iters: 1
+  net_d_init_iters: 0
+
+# logging settings
+logger:
+  print_freq: !!float 10
+#  val_freq: !!float 100
+  val_freq: !!float 500
+  save_checkpoint_freq: !!float 1000
+  use_tb_logger: true
+
+
+# path
+path:
+  pretrain_network: ~
+  resume_state: ~
