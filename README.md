@@ -11,6 +11,10 @@ This paper addresses the formidable challenges faced by state-of-the-art SISR mo
 
 To evaluate the performance and effectiveness of our proposed method, follow the steps below:
 
+### Pre-trained models: 
+
+Please download the models associated with our paper from [Google Drive](https://drive.google.com/file/d/1cmcoTnuZrItyX30_cvlDLqhhUIVPas4n/view?usp=drive_link) and save them in the `/experiments_log/hmarl_experiments` and `/experiments_log/srmodel_experiments` directory, respectively.
+
 ### Testing Individual Stages
 
 To test each stage of our framework individually:
@@ -40,9 +44,3 @@ python inference.py
 ## Acknowledgments
 
 A special thanks to all contributors and researchers in the SISR domain whose insights and work laid the foundation for this project.
-
-[comment]: <> (## License)
-
-[comment]: <> (This project is shared under the MIT License, providing wide-ranging flexibility for usage, modification, and distribution. For more details, refer to [LICENSE.md]&#40;link&#41;.)
-
-
