@@ -42,7 +42,7 @@ env:
 
 # network structures
 network:
-  name: network_ppo_edsr_attention_unet_continuous_action
+  name: ppo_network
   n_feats: 64
   res_scale: 0.2
 
